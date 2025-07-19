@@ -1,0 +1,144 @@
+{
+	"info": {
+		"_postman_id": "85615dc4-4855-4194-b3c9-c9b9e7811d1a",
+		"name": "archive_creator",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34627381"
+	},
+	"item": [
+		{
+			"name": "Создать архив",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"lastArchiveId\", pm.response.json().archive_id);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/api/archive",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"archive"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавить ссылку на файл для архива",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"file_url\": \"https://www.alleycat.org/wp-content/uploads/2019/03/FELV-cat.jpg\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/archive/{{lastArchiveId}}/add-link",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"archive",
+						"{{lastArchiveId}}",
+						"add-link"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить статус архива",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/api/archive/{{lastArchiveId}}/status",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"archive",
+						"{{lastArchiveId}}",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Скачать архив",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/api/archive/{{lastArchiveId}}/download",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"archive",
+						"{{lastArchiveId}}",
+						"download"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "http://localhost:8080",
+			"type": "default"
+		},
+		{
+			"key": "lastArchiveId",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

@@ -17,6 +17,8 @@ go build main.go
 ./main
 ```
 
+Для тестов есть postman коллекция в папке postman
+
 Фильтрация идёт по mime типам файлов
 
 ТЗ:
