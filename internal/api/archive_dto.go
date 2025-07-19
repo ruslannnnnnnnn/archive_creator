@@ -1,7 +1,7 @@
 package api
 
 type UpdateArchiveDto struct {
-	FileUrl string `json:"file_url" binding:"required"`
+	FileUrl string `json:"file_url" binding:"required,url"`
 }
 
 type CreateArchiveResponse struct {

@@ -5,8 +5,22 @@ import (
 	"sync"
 )
 
-const ArchiveStatusInProgress = "In Progress"
-const ArchiveStatusDone = "Done"
+const (
+	ArchiveStatusInProgress = "In Progress"
+	ArchiveStatusDone       = "Done"
+	ArchiveStatusError      = "Error while creating archive"
+)
+
+type IArchiveStorage interface {
+	GetProcessingArchivesAmount() int
+	GetAmountOfUrlsInArchive(archiveId string) int
+	HasArchive(id string) bool
+	GetUrlList(id string) []string
+	AddArchive() (id string, err error)
+	AddUrl(archiveId string, url string)
+	GetStatus(id string) string
+	SetStatus(id string, status string)
+}
 
 // Archive задача на создание архива
 type Archive struct {
@@ -20,42 +34,42 @@ type Storage struct {
 	mu       sync.RWMutex
 }
 
-func NewStorage() *Storage {
+func NewStorage() IArchiveStorage {
 	return &Storage{
 		archives: make(map[string]*Archive),
 	}
 }
 
 func (s *Storage) GetProcessingArchivesAmount() int {
-	s.mu.Lock()
+	s.mu.RLock()
 	result := 0
 	for _, v := range s.archives {
 		if v.Status == ArchiveStatusInProgress {
 			result++
 		}
 	}
-	s.mu.Unlock()
+	s.mu.RUnlock()
 	return result
 }
 
 func (s *Storage) GetAmountOfUrlsInArchive(archiveId string) int {
-	s.mu.Lock()
+	s.mu.RLock()
 	result := len(s.archives[archiveId].FileUrls)
-	s.mu.Unlock()
+	s.mu.RUnlock()
 	return result
 }
 
 func (s *Storage) HasArchive(id string) bool {
-	s.mu.Lock()
+	s.mu.RLock()
 	_, result := s.archives[id]
-	s.mu.Unlock()
+	s.mu.RUnlock()
 	return result
 }
 
 func (s *Storage) GetUrlList(id string) []string {
-	s.mu.Lock()
+	s.mu.RLock()
 	result := s.archives[id].FileUrls
-	s.mu.Unlock()
+	s.mu.RUnlock()
 	return result
 }
 
@@ -83,9 +97,9 @@ func (s *Storage) AddUrl(archiveId string, url string) {
 }
 
 func (s *Storage) GetStatus(id string) string {
-	s.mu.Lock()
+	s.mu.RLock()
 	result := s.archives[id].Status
-	s.mu.Unlock()
+	s.mu.RUnlock()
 	return result
 }
 

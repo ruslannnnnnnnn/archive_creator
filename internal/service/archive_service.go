@@ -11,18 +11,25 @@ import (
 )
 
 const (
-	TooMuchObjects       = "archive already has 3 objects"
+	TooMuchObjects       = "archive objects limit reached"
 	ArchiveNotFound      = "archive not found"
 	TooMuchArchives      = "server is busy"
 	UnsupportedMediaType = "file format/mime not supported"
 )
 
+type IArchiveService interface {
+	GetArchiveStatus(archiveId string) (urlAmount int, status string, downloadUrl interface{}, error api_error.IApiError)
+	CreateArchive() (id string, error api_error.IApiError)
+	AddUrlToArchive(archiveId string, url string) api_error.IApiError
+	GetArchivePath(archiveId string) (string, api_error.IApiError)
+}
+
 type ArchiveService struct {
-	storage *archiveStorage.Storage
+	storage archiveStorage.IArchiveStorage
 	config  *config.Config
 }
 
-func NewArchiveService(storage *archiveStorage.Storage, config *config.Config) *ArchiveService {
+func NewArchiveService(storage archiveStorage.IArchiveStorage, config *config.Config) IArchiveService {
 	return &ArchiveService{
 		storage: storage,
 		config:  config,
@@ -67,6 +74,7 @@ func (a *ArchiveService) AddUrlToArchive(archiveId string, url string) api_error
 		return &api_error.BadRequest{Message: TooMuchObjects}
 	}
 
+	// долго выполняется потому что ходит по url для проверки по mime
 	if !helpers.IsFileRightFormat(url, a.config.AvailableMimeTypes) {
 		return &api_error.UnsupportedMediaType{Message: UnsupportedMediaType}
 	}
@@ -79,6 +87,7 @@ func (a *ArchiveService) AddUrlToArchive(archiveId string, url string) api_error
 			err := fs.CreateArchive(archiveId, a.storage.GetUrlList(archiveId), a.config.ArchiveStorageDirPath)
 			if err != nil {
 				fmt.Print("Не удалось создать архив")
+				a.storage.SetStatus(archiveId, archiveStorage.ArchiveStatusError)
 			}
 			a.storage.SetStatus(archiveId, archiveStorage.ArchiveStatusDone)
 		}()

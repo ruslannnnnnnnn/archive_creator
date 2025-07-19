@@ -9,10 +9,10 @@ import (
 )
 
 type ArchiveController struct {
-	service *service.ArchiveService
+	service service.IArchiveService
 }
 
-func NewArchiveController(service *service.ArchiveService) *ArchiveController {
+func NewArchiveController(service service.IArchiveService) *ArchiveController {
 	return &ArchiveController{
 		service: service,
 	}
