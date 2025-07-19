@@ -1,0 +1,7 @@
+archive_storage_dir_path: "/home/ruslan/goprojects/gotest/storage/"
+objects_in_archive_limit: 3
+archives_limit: 3
+hostname: "localhost"
+scheme: "http"
+port: 8080
+available_mime_types: ["application/pdf", "image/jpeg"]
